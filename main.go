@@ -70,7 +70,7 @@ func align(name string) error {
 		switch pos {
 		case 0:
 			as = append(as, alignment{
-				File:     files[i-1],
+				BaseName: files[i-1],
 				OCR:      ocr[i-1],
 				GT:       gt[j-1],
 				Distance: m.at(i, j) - m.at(i-1, j-1),
@@ -90,7 +90,7 @@ func align(name string) error {
 	}
 	d["Alignments"] = as
 	for i := range as {
-		if err := ioutil.WriteFile(as[i].File+args.gtext, []byte(as[i].GT+"\n"), 0666); err != nil {
+		if err := ioutil.WriteFile(as[i].BaseName+args.gtext, []byte(as[i].GT+"\n"), 0666); err != nil {
 			return err
 		}
 	}
@@ -235,8 +235,8 @@ func writeJSON(name string, data interface{}) (err error) {
 }
 
 type alignment struct {
-	File, GT, OCR string
-	Distance      int
+	BaseName, GT, OCR string
+	Distance          int
 }
 
 func min(xs ...int) (int, int) {
