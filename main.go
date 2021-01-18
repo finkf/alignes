@@ -148,13 +148,13 @@ func (m mat) set(i, j, val int) int {
 func (m mat) print(out io.Writer, gt, ocr []string) {
 	max := 0
 	for i := range ocr {
-		if len(tostr(ocr[i], 8)) > max {
-			max = len(tostr(ocr[i], 8))
+		if len(tostr(ocr[i], 10)) > max {
+			max = len(tostr(ocr[i], 10))
 		}
 	}
 	for i := range gt {
-		if len(tostr(gt[i], 8)) > max {
-			max = len(tostr(gt[i], 8))
+		if len(tostr(gt[i], 10)) > max {
+			max = len(tostr(gt[i], 10))
 		}
 	}
 	var w tabwriter.Writer
@@ -162,14 +162,14 @@ func (m mat) print(out io.Writer, gt, ocr []string) {
 	defer w.Flush()
 	fmt.Fprint(&w, " \t ")
 	for i := range gt {
-		fmt.Fprintf(&w, "\t%s", tostr(gt[i], 8))
+		fmt.Fprintf(&w, "\t%s", tostr(gt[i], 10))
 	}
 	fmt.Fprintln(&w)
 	for i := 0; i < m.r; i++ {
 		if i == 0 {
 			fmt.Fprint(&w, " ")
 		} else {
-			fmt.Fprintf(&w, "%s", tostr(ocr[i-1], 8))
+			fmt.Fprintf(&w, "%s", tostr(ocr[i-1], 10))
 		}
 		for j := 0; j < m.c; j++ {
 			fmt.Fprintf(&w, "\t%d", m.at(i, j))
@@ -180,7 +180,7 @@ func (m mat) print(out io.Writer, gt, ocr []string) {
 
 func tostr(str string, n int) string {
 	if len(str) > n {
-		return str[:n]
+		return str[:n-3] + "..."
 	}
 	return str
 }
