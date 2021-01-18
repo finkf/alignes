@@ -16,7 +16,9 @@ import (
 	"git.sr.ht/~flobar/apoco/pkg/apoco/lev"
 )
 
-var ext = ".pred.txt"
+var args = struct {
+	ocrext, gtext string
+}{}
 
 func usage(prog string) func() {
 	return func() {
@@ -27,7 +29,8 @@ func usage(prog string) func() {
 }
 
 func main() {
-	flag.StringVar(&ext, "ext", ext, "set file extension for ocr files")
+	flag.StringVar(&args.ocrext, "ocrext", ".pred.txt", "set file extension for ocr files")
+	flag.StringVar(&args.gtext, "gtext", ".gt.txt", "set file extension for gt files")
 	flag.Usage = usage(os.Args[0])
 	flag.Parse()
 	for i := 1; i < len(os.Args); i++ {
@@ -47,7 +50,7 @@ func align(name string) error {
 	}
 	files, ocr, err := gatherOCRFiles(d["Dir"].(string))
 	if err != nil {
-		return fmt.Errorf("gather ocr file %s: %v", d["Dir"], err)
+		return fmt.Errorf("ocr file %s: %v", d["Dir"], err)
 	}
 	for i := range files {
 		log.Printf("%s: %s", files[i], ocr[i])
@@ -86,6 +89,11 @@ func align(name string) error {
 		as[i], as[j-1] = as[j-1], as[i]
 	}
 	d["Alignments"] = as
+	for i := range as {
+		if err := ioutil.WriteFile(as[i].File+args.gtext, []byte(as[i].GT+"\n"), 0666); err != nil {
+			return err
+		}
+	}
 	return writeJSON(name, d)
 }
 
@@ -95,10 +103,10 @@ func gatherOCRFiles(dir string) ([]string, []string, error) {
 		if err != nil {
 			return err
 		}
-		if !strings.HasSuffix(name, ext) {
+		if !strings.HasSuffix(name, args.ocrext) {
 			return nil
 		}
-		files = append(files, name[0:len(name)-len(ext)])
+		files = append(files, name[0:len(name)-len(args.ocrext)])
 		return nil
 	})
 	if err != nil {
@@ -106,7 +114,7 @@ func gatherOCRFiles(dir string) ([]string, []string, error) {
 	}
 	ocr := make([]string, len(files))
 	for i := range files {
-		line, err := readOCRFile(files[i] + ext)
+		line, err := readOCRFile(files[i] + args.ocrext)
 		if err != nil {
 			return nil, nil, err
 		}

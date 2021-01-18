@@ -5,11 +5,12 @@ Align ocr lines based on ground-truth.
 ```
 alignes [Options] [JSON...]
 Options:
-  -ext file extension of ocr files
+  -ocrext set file extension of ocr files
+  -gtext set file extension of gt files
 ```
-Aligns ocr lines with the ground-truth lines in the region directory.
-The region directory and the ground truth lines are read from the json
-files.
+Aligns ocr lines with the ground-truth lines in the region directory
+and write the ground-truth files.  The region directory and the ground
+truth lines are read from the json files.
 
 ## Installation
 To install just type `go get github.com/finkf/alignes`.
