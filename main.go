@@ -29,8 +29,8 @@ func usage(prog string) func() {
 }
 
 func main() {
-	flag.StringVar(&args.ocrext, "ocrext", ".pred.txt", "set file extension for ocr files")
-	flag.StringVar(&args.gtext, "gtext", ".gt.txt", "set file extension for gt files")
+	flag.StringVar(&args.ocrext, "ocrext", ".pred.txt", "set file extension for input ocr files")
+	flag.StringVar(&args.gtext, "gtext", ".gt.txt", "set file extension for output gt files")
 	flag.Usage = usage(os.Args[0])
 	flag.Parse()
 	for i := 1; i < len(os.Args); i++ {

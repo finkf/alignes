@@ -5,8 +5,8 @@ Align ocr lines based on ground-truth.
 ```
 alignes [Options] [JSON...]
 Options:
-  -ocrext set file extension of ocr files
-  -gtext set file extension of gt files
+  -ocrext set file extension of input ocr files
+  -gtext set file extension of output gt files
 ```
 
 Aligns ocr lines with the ground-truth lines in the region directory
