@@ -39,18 +39,13 @@ func main() {
 }
 
 func align(name string) error {
-	in, err := os.Open(name)
+	d, err := readJSON(name)
 	if err != nil {
-		return err
-	}
-	defer in.Close()
-	d := make(map[string]interface{})
-	if json.NewDecoder(in).Decode(&d); err != nil {
-		return fmt.Errorf("decode %s: %v", name, err)
+		return fmt.Errorf("align: %v", name, err)
 	}
 	files, ocr, err := gatherOCRFiles(d["Dir"].(string))
 	if err != nil {
-		return fmt.Errorf("ocr file %s: %v", d["Dir"], err)
+		return fmt.Errorf("align: %v", d["Dir"], err)
 	}
 	for i := range files {
 		log.Printf("%s: %s", files[i], ocr[i])
@@ -110,13 +105,13 @@ func gatherOCRFiles(dir string) ([]string, []string, error) {
 		return nil
 	})
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, fmt.Errorf("gather ocr files %d: %v", dir, err)
 	}
 	ocr := make([]string, len(files))
 	for i := range files {
 		line, err := readOCRFile(files[i] + args.ocrext)
 		if err != nil {
-			return nil, nil, err
+			return nil, nil, fmt.Errorf("gather ocr files %d: %v", dir, err)
 		}
 		ocr[i] = line
 	}
@@ -221,7 +216,7 @@ func readOCRFile(name string) (string, error) {
 func writeJSON(name string, data interface{}) (err error) {
 	out, err := os.Create(name)
 	if err != nil {
-		return err
+		return fmt.Errorf("write json %s: %v", name, err)
 	}
 	defer func() {
 		if err != nil {
@@ -229,9 +224,22 @@ func writeJSON(name string, data interface{}) (err error) {
 		}
 	}()
 	if err := json.NewEncoder(out).Encode(data); err != nil {
-		return fmt.Errorf("encode json %s: %v", name, err)
+		return fmt.Errorf("write json %s: encode: %v", name, err)
 	}
 	return nil
+}
+
+func readJSON(name string) (map[string]interface{}, error) {
+	in, err := os.Open(name)
+	if err != nil {
+		return fmt.Errorf("read json %s: %v", name, err)
+	}
+	defer in.Close()
+	d := make(map[string]interface{})
+	if json.NewDecoder(in).Decode(&d); err != nil {
+		return nil, fmt.Errorf("read json %s: decode: %v", name, err)
+	}
+	return d, nil
 }
 
 type alignment struct {
