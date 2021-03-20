@@ -13,7 +13,7 @@ import (
 	"strings"
 	"text/tabwriter"
 
-	"git.sr.ht/~flobar/apoco/pkg/apoco/lev"
+	"git.sr.ht/~flobar/lev"
 )
 
 var args = struct {
@@ -41,11 +41,11 @@ func main() {
 func align(name string) error {
 	d, err := readJSON(name)
 	if err != nil {
-		return fmt.Errorf("align: %v", name, err)
+		return fmt.Errorf("align: %v", err)
 	}
 	files, ocr, err := gatherOCRFiles(d["Dir"].(string))
 	if err != nil {
-		return fmt.Errorf("align: %v", d["Dir"], err)
+		return fmt.Errorf("align: %v", err)
 	}
 	for i := range files {
 		log.Printf("%s: %s", files[i], ocr[i])
@@ -105,13 +105,13 @@ func gatherOCRFiles(dir string) ([]string, []string, error) {
 		return nil
 	})
 	if err != nil {
-		return nil, nil, fmt.Errorf("gather ocr files %d: %v", dir, err)
+		return nil, nil, fmt.Errorf("gather ocr files %s: %v", dir, err)
 	}
 	ocr := make([]string, len(files))
 	for i := range files {
 		line, err := readOCRFile(files[i] + args.ocrext)
 		if err != nil {
-			return nil, nil, fmt.Errorf("gather ocr files %d: %v", dir, err)
+			return nil, nil, fmt.Errorf("gather ocr files %s: %v", dir, err)
 		}
 		ocr[i] = line
 	}
@@ -232,7 +232,7 @@ func writeJSON(name string, data interface{}) (err error) {
 func readJSON(name string) (map[string]interface{}, error) {
 	in, err := os.Open(name)
 	if err != nil {
-		return fmt.Errorf("read json %s: %v", name, err)
+		return nil, fmt.Errorf("read json %s: %v", name, err)
 	}
 	defer in.Close()
 	d := make(map[string]interface{})
