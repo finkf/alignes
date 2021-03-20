@@ -2,4 +2,4 @@ module github.com/finkf/alignes
 
 go 1.13
 
-require git.sr.ht/~flobar/apoco v0.8.0
+require git.sr.ht/~flobar/lev v0.0.0-20210320121927-47f0136b39f9
