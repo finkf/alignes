@@ -24,11 +24,11 @@ func TestAlignLines(t *testing.T) {
 		gt, ocr []string
 		want    mat
 	}{
-		{"test-1", mkstrs("testa", "testb"), mkstrs("testx", "testy"), mkmat(3, 3, 0, 1, 2, 1, 2, 3, 2, 3, 4)},
+		{"test-1", mkstrs("testa", "testb"), mkstrs("testx", "testy"), mkmat(3, 3, 0, 5, 10, 5, 1, 6, 10, 6, 2)},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
-			if got := alignLines(tc.gt, tc.ocr); reflect.DeepEqual(got.tab, tc.want.tab) {
-				t.Fatalf("exepected %#v; got %#v", tc.want.tab, got.tab)
+			if got := alignLines(tc.gt, tc.ocr); !reflect.DeepEqual(got.tab, tc.want.tab) {
+				t.Errorf("exepected %#v; got %#v", tc.want.tab, got.tab)
 			}
 		})
 	}
