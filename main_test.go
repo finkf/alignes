@@ -14,17 +14,13 @@ func mkmat(r, c int, vals ...int) mat {
 	return m
 }
 
-func mkstrs(strs ...string) []string {
-	return strs
-}
-
 func TestAlignLines(t *testing.T) {
 	for _, tc := range []struct {
 		name    string
 		gt, ocr []string
 		want    mat
 	}{
-		{"test-1", mkstrs("testa", "testb"), mkstrs("testx", "testy"), mkmat(3, 3, 0, 5, 10, 5, 1, 6, 10, 6, 2)},
+		{"test-1", []string{"testa", "testb"}, []string{"testx", "testy"}, mkmat(3, 3, 0, 5, 10, 5, 1, 6, 10, 6, 2)},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			if got := alignLines(tc.gt, tc.ocr); !reflect.DeepEqual(got.tab, tc.want.tab) {
