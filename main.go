@@ -47,13 +47,7 @@ func align(name string) error {
 	if err != nil {
 		return fmt.Errorf("align: %v", err)
 	}
-	for i := range files {
-		log.Printf("%s: %s", files[i], ocr[i])
-	}
 	gt := strings.Split(d["Text"].(string), "\n")
-	for i := range gt {
-		log.Printf("gt: %s", gt[i])
-	}
 	m, trace := alignLines(gt, ocr)
 	m.print(os.Stdout, gt, ocr)
 	var as []alignment
