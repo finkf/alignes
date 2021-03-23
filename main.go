@@ -54,37 +54,33 @@ func align(name string) error {
 	for i := range gt {
 		log.Printf("gt: %s", gt[i])
 	}
-	m := alignLines(gt, ocr)
+	m, trace := alignLines(gt, ocr)
 	m.print(os.Stdout, gt, ocr)
 	var as []alignment
-	for i, j := m.r-1, m.c-1; i > 0 && j > 0; {
-		a := m.at(i-1, j-1)
-		b := m.at(i-1, j)
-		c := m.at(i, j-1)
-		_, pos := min(a, b, c)
-		switch pos {
-		case 0:
+	i, j := 0, 0
+	for _, t := range trace {
+		switch t {
+		case '#':
 			as = append(as, alignment{
-				BaseName: files[i-1],
-				OCR:      ocr[i-1],
-				GT:       gt[j-1],
-				Distance: m.at(i, j) - m.at(i-1, j-1),
+				BaseName: files[i],
+				OCR:      ocr[i],
+				GT:       gt[j],
+				Distance: lev.Distance(ocr[i], gt[j]),
 			})
-			i--
-			j--
-		case 1:
-			i--
-		case 2:
-			j--
+			i++
+			j++
+		case 'd':
+			i++
+		case 'i':
+			j++
+		default:
+			panic("bad trace")
 		}
-
-	}
-	// Revert alignments.
-	for i, j := 0, len(as); i < j; i, j = i+1, j-1 {
-		as[i], as[j-1] = as[j-1], as[i]
 	}
 	d["Alignments"] = as
 	for i := range as {
+		log.Printf("%s GT:  %s", as[i].BaseName, as[i].GT)
+		log.Printf("%s OCR: %s", as[i].BaseName, as[i].OCR)
 		if err := ioutil.WriteFile(as[i].BaseName+args.gtext, []byte(as[i].GT+"\n"), 0666); err != nil {
 			return err
 		}
@@ -140,6 +136,30 @@ func (m mat) set(i, j, val int) int {
 	return val
 }
 
+func (m mat) trace() string {
+	var x []byte
+	for i, j := m.r-1, m.c-1; i > 0 && j > 0; {
+		switch m.at(i, j) {
+		case 0:
+			i--
+			j--
+			x = append(x, '#')
+		case 1:
+			i--
+			x = append(x, 'd')
+		case 2:
+			j--
+			x = append(x, 'i')
+		default:
+			panic("bad entry")
+		}
+	}
+	for i, j := 0, len(x); i < j; i, j = i+1, j-1 {
+		x[i], x[j-1] = x[j-1], x[i]
+	}
+	return string(x)
+}
+
 func (m mat) print(out io.Writer, gt, ocr []string) {
 	max := 0
 	for i := range ocr {
@@ -153,7 +173,7 @@ func (m mat) print(out io.Writer, gt, ocr []string) {
 		}
 	}
 	var w tabwriter.Writer
-	w.Init(out, 0, max, 1, ' ', 0)
+	w.Init(out, 1, 8, 1, ' ', 0)
 	defer w.Flush()
 	fmt.Fprint(&w, " \t ")
 	for i := range gt {
@@ -180,24 +200,28 @@ func tostr(str string, n int) string {
 	return str
 }
 
-func alignLines(gt, ocr []string) mat {
+func alignLines(gt, ocr []string) (mat, string) {
 	m := newMat(len(ocr)+1, len(gt)+1)
+	t := newMat(len(ocr)+1, len(gt)+1)
 	for i := range ocr {
 		m.set(i+1, 0, len(ocr[i])+m.at(i, 0))
+		t.set(i+1, 0, 1)
 	}
 	for i := range gt {
 		m.set(0, i+1, len(gt[i])+m.at(0, i))
+		t.set(i+1, 0, 2)
 	}
 	for i := 1; i < m.r; i++ {
 		for j := 1; j < m.c; j++ {
 			a := m.at(i-1, j-1) + lev.Distance(gt[j-1], ocr[i-1])
 			b := m.at(i-1, j) + len(ocr[i-1])
 			c := m.at(i, j-1) + len(gt[j-1])
-			min, _ := min(a, b, c)
+			min, pos := min(a, b, c)
 			m.set(i, j, min)
+			t.set(i, j, pos)
 		}
 	}
-	return m
+	return m, t.trace()
 }
 
 func readOCRFile(name string) (string, error) {
