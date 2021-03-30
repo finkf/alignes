@@ -73,3 +73,20 @@ func TestFoo(t *testing.T) {
 		t.Errorf("expected %s; got %s", want, got)
 	}
 }
+
+func TestExists(t *testing.T) {
+	tests := []struct {
+		dir  string
+		want bool
+	}{
+		{"testdata", true},
+		{"nonexistent", false},
+	}
+	for _, tc := range tests {
+		t.Run(tc.dir, func(t *testing.T) {
+			if got := exists(tc.dir); got != tc.want {
+				t.Errorf("expected %t; got %t", tc.want, got)
+			}
+		})
+	}
+}
