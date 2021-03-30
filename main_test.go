@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"reflect"
 	"testing"
 )
@@ -86,6 +87,25 @@ func TestExists(t *testing.T) {
 		t.Run(tc.dir, func(t *testing.T) {
 			if got := exists(tc.dir); got != tc.want {
 				t.Errorf("expected %t; got %t", tc.want, got)
+			}
+		})
+	}
+}
+
+func TestMin(t *testing.T) {
+	tests := []struct {
+		test             []int
+		wantmin, wantpos int
+	}{
+		{[]int{1, 2, 3}, 1, 0},
+		{[]int{3, 2, 1}, 1, 2},
+		{[]int{3, 1, 2}, 1, 1},
+	}
+	for _, tc := range tests {
+		t.Run(fmt.Sprintf("%#v", tc.test), func(t *testing.T) {
+			gotmin, gotpos := min(tc.test...)
+			if gotmin != tc.wantmin || gotpos != tc.wantpos {
+				t.Errorf("expected (%d,%d); got (%d,%d)", tc.wantmin, tc.wantpos, gotmin, gotpos)
 			}
 		})
 	}
