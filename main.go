@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"errors"
 	"flag"
 	"fmt"
 	"io"
@@ -116,7 +115,7 @@ func gatherOCRFiles(dir string) ([]string, []string, error) {
 
 func exists(dir string) bool {
 	_, err := os.Stat(dir)
-	return !errors.Is(err, os.ErrNotExist)
+	return !os.IsNotExist(err)
 }
 
 type mat struct {
