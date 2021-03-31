@@ -22,6 +22,7 @@ func TestAlignLines(t *testing.T) {
 		want    mat
 	}{
 		{"test-1", []string{"testa", "testb"}, []string{"testx", "testy"}, mkmat(3, 3, 0, 5, 10, 5, 1, 6, 10, 6, 2)},
+		{"test-2", []string{"", ""}, []string{"testa", "testb", "testc"}, mkmat(4, 3, 0, 0, 0, 5, 5, 5, 10, 10, 10, 15, 15, 15)},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			if got, _ := alignLines(tc.gt, tc.ocr); !reflect.DeepEqual(got.tab, tc.want.tab) {
