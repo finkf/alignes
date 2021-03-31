@@ -213,7 +213,7 @@ func alignLines(gt, ocr []string) (mat, string) {
 	}
 	for i := range gt {
 		m.set(0, i+1, len(gt[i])+m.at(0, i))
-		t.set(i+1, 0, 2)
+		t.set(0, i+1, 2)
 	}
 	for i := 1; i < m.r; i++ {
 		for j := 1; j < m.c; j++ {
