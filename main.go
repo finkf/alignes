@@ -44,12 +44,12 @@ func align(name string) error {
 	if err != nil {
 		return fmt.Errorf("align: %v", err)
 	}
-	dir := d["Dir"].(string)
+	dir := filepath.Join(filepath.Dir(name), d["Dir"].(string))
 	if !exists(dir) {
 		log.Printf("warning: directory %s does not exit; skipping", dir)
 		return nil
 	}
-	files, ocr, err := gatherOCRFiles(d["Dir"].(string))
+	files, ocr, err := gatherOCRFiles(dir)
 	if err != nil {
 		return fmt.Errorf("align: %v", err)
 	}
