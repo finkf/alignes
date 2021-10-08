@@ -62,7 +62,7 @@ func align(name string) error {
 		switch t {
 		case '#':
 			as = append(as, alignment{
-				BaseName: files[i],
+				BaseName: filepath.Join(filepath.Base(dir), filepath.Base(files[i])),
 				OCR:      ocr[i],
 				GT:       gt[j],
 				Distance: lev.Distance(ocr[i], gt[j]),
@@ -81,7 +81,8 @@ func align(name string) error {
 	for i := range as {
 		log.Printf("%s GT:  %s", as[i].BaseName, as[i].GT)
 		log.Printf("%s OCR: %s", as[i].BaseName, as[i].OCR)
-		if err := ioutil.WriteFile(as[i].BaseName+args.gtext, []byte(as[i].GT+"\n"), 0666); err != nil {
+		ofile := filepath.Join(filepath.Dir(dir), as[i].BaseName+args.gtext)
+		if err := ioutil.WriteFile(ofile, []byte(as[i].GT+"\n"), 0666); err != nil {
 			return err
 		}
 	}
