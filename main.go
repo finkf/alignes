@@ -89,6 +89,9 @@ func align(name string) error {
 }
 
 func gatherOCRFiles(dir string) ([]string, []string, error) {
+	fail := func(err error) ([]string, []string, error) {
+		return nil, nil, fmt.Errorf("gather ocr files %s: %v", dir, err)
+	}
 	var files []string
 	err := filepath.Walk(dir, func(name string, fi os.FileInfo, err error) error {
 		if err != nil {
@@ -101,13 +104,13 @@ func gatherOCRFiles(dir string) ([]string, []string, error) {
 		return nil
 	})
 	if err != nil {
-		return nil, nil, fmt.Errorf("gather ocr files %s: %v", dir, err)
+		return fail(err)
 	}
 	ocr := make([]string, len(files))
 	for i := range files {
 		line, err := readOCRFile(files[i] + args.ocrext)
 		if err != nil {
-			return nil, nil, fmt.Errorf("gather ocr files %s: %v", dir, err)
+			return fail(err)
 		}
 		ocr[i] = line
 	}
