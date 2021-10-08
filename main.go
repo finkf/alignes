@@ -127,11 +127,11 @@ type mat struct {
 	tab  []int
 }
 
-func newMat(r, c int) mat {
-	return mat{r: r, c: c, tab: make([]int, r*c)}
+func newmat(r, c int) *mat {
+	return &mat{r: r, c: c, tab: make([]int, r*c)}
 }
 
-func (m mat) at(i, j int) int {
+func (m *mat) at(i, j int) int {
 	idx := i*m.c + j
 	if idx >= len(m.tab) {
 		return math.MaxInt32
@@ -139,12 +139,12 @@ func (m mat) at(i, j int) int {
 	return m.tab[i*m.c+j]
 }
 
-func (m mat) set(i, j, val int) int {
+func (m *mat) set(i, j, val int) int {
 	m.tab[i*m.c+j] = val
 	return val
 }
 
-func (m mat) trace() string {
+func (m *mat) trace() string {
 	var x []byte
 	for i, j := m.r-1, m.c-1; i > 0 && j > 0; {
 		switch m.at(i, j) {
@@ -168,7 +168,7 @@ func (m mat) trace() string {
 	return string(x)
 }
 
-func (m mat) print(out io.Writer, gt, ocr []string) {
+func (m *mat) print(out io.Writer, gt, ocr []string) {
 	max := 0
 	for i := range ocr {
 		if len(tostr(ocr[i], 10)) > max {
@@ -208,9 +208,9 @@ func tostr(str string, n int) string {
 	return str
 }
 
-func alignLines(gt, ocr []string) (mat, string) {
-	m := newMat(len(ocr)+1, len(gt)+1)
-	t := newMat(len(ocr)+1, len(gt)+1)
+func alignLines(gt, ocr []string) (*mat, string) {
+	m := newmat(len(ocr)+1, len(gt)+1)
+	t := newmat(len(ocr)+1, len(gt)+1)
 	for i := range ocr {
 		m.set(i+1, 0, len(ocr[i])+m.at(i, 0))
 		t.set(i+1, 0, 1)

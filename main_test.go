@@ -6,8 +6,8 @@ import (
 	"testing"
 )
 
-func mkmat(r, c int, vals ...int) mat {
-	m := newMat(r, c)
+func mkmat(r, c int, vals ...int) *mat {
+	m := newmat(r, c)
 	if len(m.tab) != len(vals) {
 		panic("bad values for matrix")
 	}
@@ -19,7 +19,7 @@ func TestAlignLines(t *testing.T) {
 	for _, tc := range []struct {
 		name    string
 		gt, ocr []string
-		want    mat
+		want    *mat
 	}{
 		{"test-1", []string{"testa", "testb"}, []string{"testx", "testy"}, mkmat(3, 3, 0, 5, 10, 5, 1, 6, 10, 6, 2)},
 		{"test-2", []string{"", ""}, []string{"testa", "testb", "testc"}, mkmat(4, 3, 0, 0, 0, 5, 5, 5, 10, 10, 10, 15, 15, 15)},
