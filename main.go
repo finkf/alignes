@@ -33,12 +33,13 @@ func main() {
 	flag.StringVar(&args.gtext, "gtext", ".gt.txt", "set file extension for output gt files")
 	flag.Usage = usage(os.Args[0])
 	flag.Parse()
-	for i := 1; i < len(os.Args); i++ {
-		chk(align(os.Args[i]))
+	for _, name := range flag.Args() {
+		chk(align(name))
 	}
 }
 
 func align(name string) error {
+	log.Printf("aligning %s", name)
 	d, err := readJSON(name)
 	if err != nil {
 		return fmt.Errorf("align: %v", err)
